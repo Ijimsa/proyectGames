@@ -10,7 +10,8 @@ export class UserService {
 
 
     login(user: any): Observable<any> {
-        return this.http.post("https://reqres.in/api/login", user); 
+        // const header = {'Authorization':`Bearer ${token}`} ,{headers:header}
+        return this.http.post("http://localhost:8000/api/login_check", user); 
     }
 
 }

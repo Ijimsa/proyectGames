@@ -14,8 +14,13 @@ export class LoginComponent {
 
   login() {
     const user = {username: this.username, password: this.password};
-    this.userService.login(user).subscribe( data => {
+    this.userService.login(user).subscribe(data => {
       console.log(data);
+      localStorage.setItem("token",data.token);
+    },
+    error=>{
+      console.log(error);
+      alert("User no logon");
     });
   }
 }

@@ -1,50 +1,42 @@
 <?php
-
+  
 namespace App\Controller;
-
-use App\Entity\User;
-use App\Form\RegistrationFormType;
-use App\Repository\UserRepository;
-use Doctrine\ORM\EntityManagerInterface;
+  
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Contracts\Translation\TranslatorInterface;
-use Symfony\Component\HttpFoundation\JsonResponse;
-
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Doctrine\Persistence\ManagerRegistry;
+use App\Entity\User;
+  
+/**
+ * @Route("/api", name="api_")
+ */
+  
 class RegistrationController extends AbstractController
 {
-    #[Route('/register', name: 'app_register', methods:"POST")]
-    public function register(Request $request, UserPasswordHasherInterface $userPasswordHasher,UserRepository $userRepository, EntityManagerInterface $entityManager): Response
+    /**
+     * @Route("/register", name="register", methods={"POST"})
+     */
+    public function index(ManagerRegistry $doctrine, Request $request, UserPasswordHasherInterface $passwordHasher): Response
     {
-        $data = json_decode($request->getContent(), true);
-        $username = $data['username'];
-        $password = $data['password'];
-        // Validar los datos de entrada aquí si es necesario.
-        $existingUser = $userRepository->findOneBy(['username' => $username]);
-        if($existingUser!== null){
-            $jsonResponse = [
-                'register' => false,
-                'message' => 'Username already taken'
-            ];
-             return new JsonResponse($jsonResponse);
-        }
+          
+        $em = $doctrine->getManager();
+        $decoded = json_decode($request->getContent());
+        $email = $decoded->username;
+        $plaintextPassword = $decoded->password;
+  
         $user = new User();
-            // encode the plain password
-            $user->setPassword(
-                $userPasswordHasher->hashPassword(
-                    $user,
-                    $request->get('password')->getData()
-                )
-            );
-            $user->setUsername($username); 
-            $entityManager->persist($user);
-            $entityManager->flush();
-            // do anything else you need here, like send an email
-
-            return new JsonResponse(['Registration ' => true])
-        ;
+        $hashedPassword = $passwordHasher->hashPassword(
+            $user,
+            $plaintextPassword
+        );
+        $user->setPassword($hashedPassword);
+        $user->setUsername($email);
+        $em->persist($user);
+        $em->flush();
+  
+        return $this->json(['message' => 'Registered Successfully']);
     }
 }
