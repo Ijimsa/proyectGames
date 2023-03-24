@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { UserService } from '../users/users.service';
 
 @Component({
   selector: 'app-register',
@@ -10,11 +11,18 @@ export class RegisterComponent {
     password: string | undefined; 
     confirmPassword: string | undefined; 
 
-    constructor() {}
+    constructor(public userService : UserService) {}
 
     register() {
-      console.log(this.username); 
-      console.log(this.password); 
+        //**Esta funcion hace una llamada a la api y manda los valores del formulario para que se añadan a la BD */
+        // Para hacer esto bien, tendría que haber un servicio que validase la información del formulario
+        let data = {
+          username: this.username,
+          password: this.password
+        }
+        this.userService.register(JSON.stringify(data)).subscribe(data => {
+          alert(data);
+        })
     }
 
   }

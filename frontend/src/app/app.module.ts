@@ -5,20 +5,27 @@ import { HttpClientModule } from '@angular/common/http';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { LoginComponent } from './login/login.component';
-import { RegisterComponent } from './register/register.component';
+import { RouterModule } from '@angular/router';
+import { UserModule } from './shared/user.module';
+import { CommonModule } from '@angular/common';
+import { WelcomeComponent } from './welcome/welcome.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    LoginComponent,
-    RegisterComponent, 
+    WelcomeComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule, 
     FormsModule, 
-    HttpClientModule
+    HttpClientModule,
+    RouterModule,
+    UserModule,
+    CommonModule
+  ],
+  exports:[
+    CommonModule
   ],
   providers: [],
   bootstrap: [AppComponent]
